@@ -5,34 +5,29 @@ import ComboBox from "@components/ComboBox";
 import { getPointsCenter } from "./utils";
 import { polygonCommonStyle } from "./constant";
 // eslint-disable-next-line react/prop-types
-import { fetchPoiByText, fetchPoiAround } from "./api";
+import { fetchPoiByText } from "./api";
 
 export default function SearchToMark() {
-  const map = useStore((state) => state.map);
-  const AMap = useStore((state) => state.AMap);
-  const setPoiData = useStore((state) => state.setPoiData);
-
-  const pointsCenter = useStore((state) => state.pointsCenter);
-  const setPointsCenter = useStore((state) => state.setPointsCenter);
-
-  const vertexList = useStore((state) => state.vertexList);
-  const updateVertexList = useStore((state) => state.updateVertexList);
+  const {
+    map,
+    AMap,
+    setPoiData,
+    pointsCenter,
+    setPointsCenter,
+    vertexList,
+    updateVertexList,
+    poiTypes,
+    setPoiTypes,
+    fetchPoiAround,
+  } = useStore();
 
   const [isMarking, setIsMarking] = useState(false);
   const [markers, setMarkers] = useState([]);
   const [curArea, setCurArea] = useState(null);
-  const [type, setType] = useState("050000");
 
   useEffect(() => {
-    if (pointsCenter?.length === 2) handleFetchPoi(pointsCenter, type);
-  }, [pointsCenter, type]); // eslint-disable-line
-
-  const handleFetchPoi = (pointsCenter, type) => {
-    fetchPoiAround(pointsCenter, type).then((res) => {
-      const poiData = res?.data?.pois;
-      setPoiData(poiData);
-    });
-  };
+    if (pointsCenter?.length === 2) fetchPoiAround();
+  }, [pointsCenter, poiTypes]); // eslint-disable-line
 
   const handleToggleMarking = () => {
     if (isMarking && vertexList?.length <= 1) {
@@ -101,8 +96,8 @@ export default function SearchToMark() {
           {isMarking ? "停止此轮标记" : "开始新一轮标记"}
         </Button>
         <Select
-          value={type}
-          onChange={(value) => setType(value)}
+          value={poiTypes}
+          onChange={(value) => setPoiTypes(value)}
           options={[
             { label: "餐饮服务", value: "050000" },
             { label: "购物服务", value: "010000" },

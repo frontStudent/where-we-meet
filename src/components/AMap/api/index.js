@@ -11,13 +11,17 @@ export const fetchPoiByText = (keyword) => {
   });
 };
 
-export const fetchPoiAround = (center, type) => {
+export const fetchPoiAround = (center, types, page) => {
   return axios.get("https://restapi.amap.com/v3/place/around", {
     params: {
       key: WEB_SERVICE_KEY,
       location: `${center[0]},${center[1]}`,
       radius: 1000,
-      types: type,
+      types,
+
+      page: page ?? 1,
+      offset: 20,
+
       output: "json",
     },
   });
