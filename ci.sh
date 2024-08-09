@@ -4,6 +4,8 @@
 echo "Updating code from git..."
 git pull
 
+npm install
+
 npm run build
 
 cp -r dist/* ~/nginx/html/where-we-meet
