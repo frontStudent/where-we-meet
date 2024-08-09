@@ -7,7 +7,7 @@ import TagSelect from "ant-design-pro/lib/TagSelect";
 const foodOptions = [
   { label: "中餐厅", value: "050100" },
   { label: "外国餐厅", value: "050200" },
-  { label: "快餐", value: "050300" },
+  { label: "快餐1", value: "050300" },
   { label: "咖啡厅", value: "050500" },
   { label: "甜品店", value: "050900" },
 ];
