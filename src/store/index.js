@@ -35,12 +35,14 @@ export const useStore = create((set, get) => ({
     set((state) => ({ poiDataPage: state.poiDataPage + 1 })),
 
   // POI类型
-  poiTypes: "050000",
+  poiTypes: ["050000"],
   setPoiTypes: (types) => set({ poiTypes: types }),
 
   // 获取中心点附近的POI数据
   fetchPoiAround: () => {
     const { poiDataPage, poiTypes, pointsCenter, setPoiData } = get();
+    if(pointsCenter.length < 2) return;
+    const types = poiTypes.join("|");
     const alertModal = (content) => {
        Modal.confirm({
          title: "提示",
@@ -55,7 +57,7 @@ export const useStore = create((set, get) => ({
           key: WEB_SERVICE_KEY,
           location: `${pointsCenter[0]},${pointsCenter[1]}`,
           radius: 1000,
-          types: poiTypes,
+          types,
 
           page: poiDataPage,
           offset: 20,
@@ -64,9 +66,10 @@ export const useStore = create((set, get) => ({
         },
       })
       .then((res) => {
+        const data = res?.data || {}
         // https://lbs.amap.com/api/webservice/guide/tools/info/
-        if (res?.status === "0") {
-          switch (res?.info) {
+        if (data?.status === "0") {
+          switch (data?.info) {
             case "INVALID_USER_KEY":
               alertModal("用户Key无效");
               break;

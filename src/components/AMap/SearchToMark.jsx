@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useStore } from "@store";
-import { Button, Space, message, Select } from "antd";
+import { Button, Space, message } from "antd";
 import ComboBox from "@components/ComboBox";
 import { getPointsCenter } from "./utils";
 import { polygonCommonStyle } from "./constant";
@@ -16,8 +16,6 @@ export default function SearchToMark() {
     setPointsCenter,
     vertexList,
     updateVertexList,
-    poiTypes,
-    setPoiTypes,
     fetchPoiAround,
   } = useStore();
 
@@ -27,7 +25,7 @@ export default function SearchToMark() {
 
   useEffect(() => {
     if (pointsCenter?.length === 2) fetchPoiAround();
-  }, [pointsCenter, poiTypes]); // eslint-disable-line
+  }, [pointsCenter]); // eslint-disable-line
 
   const handleToggleMarking = () => {
     if (isMarking && vertexList?.length <= 1) {
@@ -83,26 +81,17 @@ export default function SearchToMark() {
   };
 
   return (
-    <div>
-      <Space style={{ zIndex: 1000, position: "fixed", left: 10, top: 10 }}>
+    <div style={{margin: "10px 0"}}>
+      <Space>
+        <Button onClick={handleToggleMarking}>
+          {isMarking ? "停止此轮标记" : "开始标记"}
+        </Button>
         <ComboBox
           disabled={!isMarking}
           placeholder="输入关键字"
           style={{ width: 200 }}
           request={fetchPoiByText}
           onBeforeChange={handleInputChange}
-        />
-        <Button onClick={handleToggleMarking}>
-          {isMarking ? "停止此轮标记" : "开始新一轮标记"}
-        </Button>
-        <Select
-          value={poiTypes}
-          onChange={(value) => setPoiTypes(value)}
-          options={[
-            { label: "餐饮服务", value: "050000" },
-            { label: "购物服务", value: "010000" },
-          ]}
-          style={{ width: "100px" }}
         />
       </Space>
     </div>

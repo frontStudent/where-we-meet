@@ -77,7 +77,7 @@ export default function MapContainer(props) {
     <div
       id="container"
       ref={mapRef}
-      style={{ height: "100%", padding: 0, margin: 0, width: "100%" }}
+      style={{ height: "100%", padding: 0, margin: 0, width: "100%", position: "relative" }}
     >
       {children}
     </div>
