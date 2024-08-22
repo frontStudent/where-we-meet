@@ -1,7 +1,9 @@
 import { create } from "zustand";
 import axios from "axios";
 import { Modal } from "antd";
-const WEB_SERVICE_KEY = "9f36a75711c0741c33ddebc1d27880ed";
+
+import { getParamsWithSignature } from "@utils";
+const WEB_SERVICE_KEY = import.meta.env.VITE_WEB_SERVICE_KEY;
 
 export const useStore = create((set, get) => ({
   map: undefined,
@@ -41,32 +43,31 @@ export const useStore = create((set, get) => ({
   // 获取中心点附近的POI数据
   fetchPoiAround: () => {
     const { poiDataPage, poiTypes, pointsCenter, setPoiData } = get();
-    if(pointsCenter.length < 2) return;
+    if (pointsCenter.length < 2) return;
     const types = poiTypes.join("|");
     const alertModal = (content) => {
-       Modal.confirm({
-         title: "提示",
-         content,
-         okText: "确定",
-         onOk: () => {},
-       });
-    }
+      Modal.confirm({
+        title: "提示",
+        content,
+        okText: "确定",
+        onOk: () => {},
+      });
+    };
+    const params = {
+      key: WEB_SERVICE_KEY,
+      location: `${pointsCenter[0]},${pointsCenter[1]}`,
+      radius: 1000,
+      types,
+      page: poiDataPage,
+      offset: 20,
+      output: "json",
+    };
     axios
       .get("https://restapi.amap.com/v3/place/around", {
-        params: {
-          key: WEB_SERVICE_KEY,
-          location: `${pointsCenter[0]},${pointsCenter[1]}`,
-          radius: 1000,
-          types,
-
-          page: poiDataPage,
-          offset: 20,
-
-          output: "json",
-        },
+        params: getParamsWithSignature(params),
       })
       .then((res) => {
-        const data = res?.data || {}
+        const data = res?.data || {};
         // https://lbs.amap.com/api/webservice/guide/tools/info/
         if (data?.status === "0") {
           switch (data?.info) {
@@ -82,11 +83,14 @@ export const useStore = create((set, get) => ({
             case "USER_DAILY_QUERY_OVER_LIMIT":
               alertModal("用户日请求量超限");
               break;
+            case "INVALID_USER_SIGNATURE":
+              alertModal("用户签名无效");
+              break;
             default:
               alertModal("未知错误，未查询到数据");
               break;
           }
-          return
+          return;
         }
         setPoiData(res?.data?.pois);
       });
